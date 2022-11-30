@@ -8,6 +8,8 @@ namespace CURRYING {
         What's demonstrated here is the ability to "pre-load" a function with an argument or two in order to receive a new function that remembers those arguments.
     
         When we spoke about pure functions, we said they take 1 input to 1 output. Currying does exactly this: each single argument returns a new function expecting the remaining arguments. That, old sport, is 1 input to 1 output.
+
+        Currying in some cases will help you avoid code duplication in context of calling one and the same function with multiple arguments(some of them different) several times.
     */
 
     type CurryFunction = (...args: Array<any>) => any
