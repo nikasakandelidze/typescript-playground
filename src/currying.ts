@@ -52,3 +52,8 @@ const doublerResult1:Array<number> = doubler([1,2,3,11,12,13])
 const doublerResult2:Array<number> = doubler([0,-1,1,2])
 console.log(doublerResult1)
 console.log(doublerResult2)
+
+/*
+ *  My thought is that currying is really helpful when trying to use different functions with different input arguments within one compose pipeline, 
+ *  since it lets pipeline API be uniform.
+ */
