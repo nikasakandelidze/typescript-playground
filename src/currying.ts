@@ -1,5 +1,5 @@
 
-namespace CURRYING {
+export namespace CURRYING {
     /* 
         Currying is the transformation of a function with multiple arguments into a sequence of single-argument functions. 
         That means converting a function like this f(a, b, c, ...) into a function like this f(a)(b)(c)... .
