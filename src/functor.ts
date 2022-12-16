@@ -7,14 +7,20 @@ import { CURRYING } from "./currying";
 
 // Functor can be used in any case where you don't know for sure that value will be returned
 // Functors are a good idea when you want to invoke series of functions on the transformation seqeuence of a value
-class  Functor<T=any>{
-    private value: T;
-    static of<U>(value: U){
+export class  Functor<T=any>{
+    private value: T | undefined;
+    private errorMessage: string | undefined = undefined;
+    static of<U>(value: U | undefined){
         return new Functor<U>(value)
     }
 
-    private constructor(value: T){
+    static error(err:string){
+        return new Functor(undefined, err)
+    }
+
+    private constructor(value: T|undefined, errorMessage: string|undefined=undefined){
         this.value = value;
+        this.errorMessage = errorMessage;
     }
 
     public isNothing(){
@@ -22,11 +28,11 @@ class  Functor<T=any>{
     }
 
     public map<O>(f: (input: T)=>O): Functor<O|T>{
-        return this.isNothing() ? this : Functor.of(f(this.value))
+        return this.isNothing() ? this : Functor.of(f(this.value!!))
     }
 
     public inspect(): string {
-        return this.isNothing() ? "Nothing" : this.value + ""
+        return this.isNothing() ? this.errorMessage || "Nothing" : this.value + ""
     }
 }
 
@@ -90,3 +96,10 @@ const noValueMissing = CURRYING.curry(<T> (res: T, f: any, functor: Functor<T>)=
 const widthrawResult3 = compose(noValueMissing('No sufficient balance', compose(convertToCurrencyFactor(3), prop('balance'))), withdraw(10))({balance: 20})
 const widthrawResult4 = compose(noValueMissing('No sufficient balance', compose(convertToCurrencyFactor(3), prop('balance'))), withdraw(40))({balance: 20})
 console.log(widthrawResult3, widthrawResult4)
+
+// What if instead of external function for inserting error message instead of missing value we directly introduce
+// that kind of mechanism in the Functor type?
+const withdrawWithErrorMessage = CURRYING.curry((amount: number, {balance}:{balance: number}) => amount > balance ? Functor.error("Not enough balance") : Functor.of({balance: balance-amount}))
+const withdrawResult5 = compose(functorMap(prop('balance')), withdrawWithErrorMessage(30))({balance: 40})//enough balance
+const withdrawResult6 = compose(functorMap(prop('balance')), withdrawWithErrorMessage(50))({balance: 40})//enough balance
+console.log(withdrawResult5, withdrawResult6)
